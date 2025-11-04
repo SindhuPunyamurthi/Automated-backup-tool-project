@@ -179,8 +179,7 @@ Examples
    This project automates the process of creating, verifying, and managing backups using a Bash script. It
    ensures data safety through checksum verification, logging, and automatic cleanup of old backups. We
    learned how to use shell scripting for automation, data integrity checks, and backup management —
-   building a strong foundation for real-world data protection systems...
-
+   building a strong foundation for real-world data protection systems..
 
 
 
