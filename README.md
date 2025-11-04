@@ -1,4 +1,4 @@
-smart Backup Automation Script
+**smart Backup Automation Script**
 
  A. Project Overview
 This project is a **smart automated backup tool** written in Bash.  
