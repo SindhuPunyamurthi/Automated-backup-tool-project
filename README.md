@@ -1,186 +1,127 @@
-**smart Backup Automation Script**
+🗂️ Automated Backup System
+📘 A. **Project Overview**
 
- A. Project Overview
-This project is a **smart automated backup tool** written in Bash.  
-The script automatically creates compressed backups of a specified folder, verifies them with a checksum, and manages old backups according to a retention policy (daily, weekly, monthly).  
+This project is an automated backup system written in Bash.
+It automatically creates compressed backups (.tar.gz) of important folders, verifies their integrity with SHA256 checksums, and removes old backups based on a retention policy.
 
-Why it is useful:
-- Protects important files from accidental deletion or corruption.  
-- Saves disk space by keeping only a limited number of backups.  
-- Provides verification to ensure backups are not corrupted.  
-- Supports dry-run mode, logging, and optional restore.
+It helps to keep data safe, reduce manual effort, and save disk space by deleting older backups.
 
----
+⚙️ B. **How to Use It**
+🔧 Installation Steps
 
-## B. How to Use It
+Clone or copy this project folder to your system.
 
-### Installation Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/<your-username>/backup-system.git
-   cd backup-system
+Make sure you have bash and tar installed (default on Linux/macOS).
 
-2 Make the script executable:
-  chmod +x backup.sh
+Open a terminal inside the project folder:
 
-3 Ensure folders exist (logs, backups, test_data):
-  mkdir -p logs backups/daily backups/weekly backups/monthly test_data/documents
-
-  Basic Usage Examples
-
-*Create a backup:
-./backup.sh ./test_data/documents
-
- *Dry run (simulate backup without creating files):
-    ./backup.sh --dry-run ./test_data/documents
-   
-* List all backups:
-   ./backup.sh --list
+cd ~/BACKUP-SYSTEM
 
 
-*Restore a backup:
-./backup.sh --restore backups/daily/backup-2025-11-03-1607.tar.gz --to restored_files
+**Make the script executable**:
+ chmod +x backup.sh
 
-C. **How It Works**
-1. Backup Creation
+▶️ Basic Usage Examples
+1️⃣ Create a Backup
+bash backup.sh test_data
 
-The script compresses the folder using tar -czf into a .tar.gz file.
-Excluded folders (like .git, node_modules, .cache) are skipped using patterns from backup.config.
-Each backup is timestamped, e.g., backup-2025-11-03-1607.tar.gz.
+2️⃣ Dry Run (Simulate backup without creating files)
+bash backup.sh --dry-run test_data
 
-2. **Checksum Verification**
-*A SHA256 checksum is generated for every backup:
-    sha256sum backup-2025-11-03-1607.tar.gz > backup-2025-11-03-1607.tar.gz.sha256
+3️⃣ List Available Backups
+bash backup.sh --list
 
-*Verification ensures backup integrity:
-   sha256sum -c backup-2025-11-03-1607.tar.gz.sha256
+4️⃣ Restore a Backup
+bash backup.sh --restore backups/backup-2025-11-03-1457.tar.gz --to ./restored_data
 
- 3. **Backup Rotation** (Deletion)
+🧩 Command Options
+Option	Description
+--dry-run	Simulates the backup without creating files.
+--list	Shows all available backups.
+--restore <file> --to <folder>	Restores the specified backup to a target folder.
+(no option)	Creates a new backup from the provided source folder.
 
-Daily: Keep last 7 backups.
+**🧠 C. How It Works**
+🔄 Backup Rotation
+The script keeps only the latest backups according to:
 
-Weekly: Keep last 4 backups.
+7 daily backups
+4 weekly backups
+3 monthly backups
 
-Monthly: Keep last 3 backups.
+Older backups beyond this count are automatically deleted.
 
-The script deletes the oldest backups beyond these limits to save space.
-All actions are logged in logs/backup.log.
+**🔒 Checksum (Integrity Verification)**
 
-4.**Folder Structure**
+Each backup generates a .sha256 file containing a unique fingerprint.
+Example:
 
-backup-system/
-├── backup.sh
-├── backup.config
-├── logs/
+backup-2025-11-03-1457.tar.gz
+backup-2025-11-03-1457.tar.gz.sha256
+This ensures the backup hasn’t been corrupted or changed.
+
+**Folder Structure**
+BACKUP-SYSTEM/
+├── backup.config        # Configuration file
+├── backup.sh            # Main script
+├── backups/             # Generated backup files
+│   ├── backup-2025-11-03-1457.tar.gz
+│   └── backup-2025-11-03-1457.tar.gz.sha256
+├── logs/                # Log history
 │   └── backup.log
-├── backups/
-│   ├── daily/
-│   ├── weekly/
-│   └── monthly/
-└── test_data/
-    └── documents/
-        ├── file1.txt
-        └── file2.txt
+└── test_data/           # Sample source folder
+    ├── documents/
+    │   ├── file1.txt
+    │   ├── file2.txt
+    │   └── notes.txt
+    └── media/
+        └── data.log
 
- D. **Design Decisions**
+🧩 **D. Design Decisions**
 
-Why Bash: Lightweight, portable, and ideal for server environments.
+Bash Script: Simple, portable, and works on most Unix-like systems.
 
-Checksum verification: Ensures backups are not corrupted before deletion.
+SHA256 Checksum: More secure than MD5 for verifying file integrity.
 
-Lock file: Prevents multiple scripts from running simultaneously.
+Retention Policy: Prevents disk overflow by deleting old backups automatically.
 
-Logging: Allows tracking all operations and errors.
+Lock Mechanism: Ensures only one backup process runs at a time.
 
-Challenges faced:
+🧪 **E. Testing**
+✅ Tests Performed:
 
-*Handling old backup deletion while respecting daily/weekly/monthly retention.
-*Ensuring the script doesn’t crash if a folder is missing or unreadable.
+Created multiple backups at different times.
 
-Solutions:
+Verified that .tar.gz and .sha256 files are generated.
 
-*Used ls -1t with tail to remove oldest backups.
-*Added error checks for missing folders, permission issues, and disk space.
+Simulated backup using --dry-run.
 
-Testing
-1. Test Setup
+Tested restore with --restore and verified files were recovered.
 
-Created a test folder with files:
+Checked cleanup: older backups are deleted automatically after exceeding the limit.
 
-echo "Hello Backup" > test_data/documents/file1.txt
-echo "Important File" > test_data/documents/file2.txt
+🧾 Example Output
+[2025-11-03 14:53:28] SUCCESS: Backup created: ./backups/backup-2025-11-03-1453.tar.gz
+[2025-11-03 14:53:28] INFO: Checksum verified successfully
+[2025-11-03 14:53:28] INFO: Cleaning up old backups...
+[2025-11-03 14:53:28] SUCCESS: Backup process completed.
 
-2. Creating a Backup
-./backup.sh ./test_data/documents
+⚠️ **F. Known Limitations**
 
+Works only on Linux/macOS (not directly on Windows without WSL).
 
-Output:
+No email notifications implemented yet (placeholder in config).
 
-[INFO] Starting backup of ./test_data/documents
-[SUCCESS] Backup created: ./backups/daily/backup-2025-11-03-1607.tar.gz
-[INFO] Checksum verified successfully
+Only basic file exclusion patterns supported.
 
-3. Dry Run Mode
-./backup.sh --dry-run ./test_data/documents
+Does not yet include automated restore testing.
 
+📌 **Example Summary**
 
-Output:
+✅ Created and verified multiple backups
 
-[INFO] [DRY-RUN] Would create backup at ./backups/daily/backup-2025-11-03-1609.tar.gz
+✅ Automatically deleted older backups
 
-4. Automatic Deletion
+✅ Tested restore and dry-run
 
-Simulated old backups and ran the script.
-
-Old backups beyond retention were deleted:
-
-[INFO] Deleted old backup: backup-2025-10-15-0900.tar.gz
-
-5. Restore Backup
-./backup.sh --restore backups/daily/backup-2025-11-03-1607.tar.gz --to restored_files
-
-Files restored successfully:
-
-restored_files/file1.txt
-restored_files/file2.txt
-
-6. Error Handling
-
-Backup a non-existent folder:
-
-./backup.sh nonexistent_folder
-[ERROR] Source folder not found: nonexistent_folder
-
-
- **Known Limitations**
-
-Weekly and monthly rotation is currently count-based, not date-based (could improve by checking calendar weeks/months).
-
-Incremental backup is not implemented (currently full backups only).
-
-Email notifications are simulated by writing to a file, not sent to real email.
-
-Examples
-
-1 Creating a backup
-
-2 Creating multiple backups over several days (simulate by copying backup files with fake dates)
-
-3 Automatic deletion of old backups
-
-4 Restoring from a backup
-
-5 Dry run mode
-
-6 Error handling with a non-existent folder
-
-
-**Conclusion**
-   This project automates the process of creating, verifying, and managing backups using a Bash script. It
-   ensures data safety through checksum verification, logging, and automatic cleanup of old backups. We
-   learned how to use shell scripting for automation, data integrity checks, and backup management —
-   building a strong foundation for real-world data protection systems..
-
-
-
-
+✅ All logs stored in logs/backup.log
