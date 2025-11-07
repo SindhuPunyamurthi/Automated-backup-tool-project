@@ -1,7 +1,7 @@
 
 ##🗂️ Backup-System**
 
- #Project Overview
+ **Project Overview**
 
 Backup-System is a lightweight Bash-based automated backup solution designed to create, verify, and manage backups of important directories.
 It compresses data into timestamped .tar.gz archives, generates SHA256 checksums for file integrity verification, and automatically deletes older backups according to a configurable retention policy.
