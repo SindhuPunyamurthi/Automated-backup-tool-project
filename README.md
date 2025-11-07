@@ -106,6 +106,7 @@ EMAIL_NOTIFICATION=""
     bash backup.sh --restore backups/backup-2025-11-03-1457.tar.gz --to ./restored_data
 
   **H. Backup Process Explained**
+   
     When you run the script:
 
     * It checks for configuration and available disk space.
